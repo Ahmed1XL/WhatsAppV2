@@ -244,47 +244,95 @@ private:
 public:
     GroupChat(vector<string> users, string name, string creator)
     {
-        // TODO: Implement constructor
+        participants = users;
+        chatName = name;
+
+        if (!isParticipant(creator)) {
+            participants.push_back(creator);
+        }
+        admins.push_back(creator);
     }
 
     void addAdmin(string newAdmin)
     {
-        // TODO: Implement add admin
+        if (isParticipant(newAdmin) && !isAdmin(newAdmin))
+        {
+            admins.push_back(newAdmin);
+            cout << newAdmin << " is now an admin. \n";
+        }
+        else
+        {
+            cout << "Cannot add admin. \n";
+        }
     }
 
-    bool removeParticipant(const string &admin, const string &userToRemove)
-    {
-        // TODO: Implement remove participant
+    bool removeParticipant(const string &admin, const string &userToRemove) {
+        if (!isAdmin(admin)) {
+            cout << admin << " is not an admin. \n";
+            return false;
+        }
+        for (int i = 0; i < participants.size(); i++) {
+            if (participants[i] == userToRemove) {
+                participants.erase(participants.begin() + i);
+                for (int j = 0; j < admins.size(); j++) {
+                    if (admins[j] == userToRemove) {
+                        admins.erase(admins.begin() + j);
+                        break;
+                    }
+                }
+                cout << userToRemove << " has been removed. \n";
+                return true;
+            }
+        }
         return false;
     }
 
     bool isAdmin(string username) const
     {
-        // TODO: Implement admin check
+        for (int i = 0; i < admins.size(); i++)
+        {
+            if (admins[i] == username)
+                return true;
+        }
         return false;
     }
 
     bool isParticipant(string username) const
     {
-        // TODO: Implement participant check
+        for (int i = 0; i < participants.size(); i++)
+        {
+            if (participants[i] == username)
+                return true;
+        }
         return false;
     }
 
     void setDescription(string desc)
     {
-        // TODO: Implement set description
+        description = desc;
     }
 
-    void displayChat() const override
-    {
-        // TODO: Implement group chat display
+    void displayChat() const override {
+        cout << "=== Group: " << chatName << " ===\n";
+        cout << "Description: " << description << "\n";
+        cout << "Participants (" << participants.size() << "): ";
+        for (int i = 0; i < participants.size(); i++) {
+            cout << participants[i];
+            if (isAdmin(participants[i])) cout << " (admin)";
+            if (i != participants.size() - 1) cout << ", ";
+        }
+        cout << "\n\nMessages (" << messages.size() << "):\n";
+        for (Message msg : messages) {
+            msg.display();
+        }
     }
 
     void sendJoinRequest(const string &username)
     {
-        // TODO: Implement join request
+        cout << username << " sent a join request. \n";
     }
 };
+
 
 // ========================
 //    WHATSAPP APP CLASS
