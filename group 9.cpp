@@ -346,20 +346,27 @@ private:
 
     int findUserIndex(string username) const
     {
-        // TODO: Implement user search
+        for (int i=0; i<users.size(); i++) {
+            if (users[i].getUsername() == username)
+                return i;
+        }
         return -1;
     }
 
     bool isLoggedIn() const
     {
-        // TODO: Implement login check
-        return false;
+        if (currentUserIndex != -1)
+            return true;
+        else
+            return false;
     }
 
     string getCurrentUsername() const
     {
-        // TODO: Implement get current user
-        return "";
+        if (isLoggedIn()) {
+            return users[currentUserIndex].getUsername();
+        }
+        return "None";
     }
 
 public:
@@ -367,13 +374,57 @@ public:
 
     void signUp()
     {
-        // TODO: Implement user registration
+    string username;
+    string password;
+    string phone;
+
+    cout << "Please enter a username: ";
+    cin >> username;
+    if(findUserIndex(username)!= -1){
+        cout << "This username is TAKEN!" << endl;
+        return;
+    }
+
+    cout << "Please enter password: " ;
+    cin >> password;
+    cout << "Please enter phone number: ";
+    cin >> phone;
+
+    users.push_back(User(username, password, phone));
+    cout << "You Are Now Registered. Please LogIn Now";
     }
 
     void login()
     {
-        // TODO: Implement user login
-    }
+        if (isLoggedIn()) {
+            cout << "You are logged in already " << endl;
+            return;
+            }
+
+        string username;
+        string password;
+
+        cout << "Please enter username: ";
+        cin >> username;
+
+        if(findUserIndex(username) == -1){
+            cout << "Username not found" << endl;
+            return;
+        }
+
+        cout << "Please enter password: ";
+        cin >> password;
+
+        if (!users[findUserIndex(username)].checkPassword(password)) {
+            cout << "Wrong password!" << endl;
+            return;
+        }
+
+        currentUserIndex = findUserIndex(username);
+        users[findUserIndex(username)].setStatus("Online");
+        users[findUserIndex(username)].updateLastSeen();
+        cout << "Welcome back " << username << endl;
+        }
 
     void startPrivateChat()
     {
