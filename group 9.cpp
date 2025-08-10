@@ -8,77 +8,99 @@ using namespace std;
 // ========================
 //       USER CLASS
 // ========================
-class User
-{
+enum Status {Online , Offline};
+class User {
 private:
     string username;
     string password;
     string phoneNumber;
-    string status;
+    Status status;
     string lastSeen;
 
 public:
-    User()
-    {
+    User() {
         // TODO: Implement default constructor
+        username="";
+        password="";
+        phoneNumber="";
+        status=Offline;
+        lastSeen="";
     }
 
-    User(string uname, string pwd, string phone)
-    {
+    User(string uname, string pwd, string phone) {
         // TODO: Implement parameterized constructor
+        username= uname;
+        password= pwd;
+        phoneNumber= phone;
+        status= Offline;
+        lastSeen="";
     }
 
-    string getUsername() const
-    {
+    string getUsername() const {
         // TODO: Implement getter
-        return "";
+        return username;
     }
 
-    string getPhoneNumber() const
-    {
+    string getPhoneNumber() const {
         // TODO: Implement getter
-        return "";
+
+        return phoneNumber;
     }
 
-    string getStatus() const
-    {
+    string getStatus() const {
         // TODO: Implement getter
-        return "";
+        return (status==Online)? "Online" : "Offline" ;
     }
 
-    string getLastSeen() const
-    {
+    string getLastSeen() const {
         // TODO: Implement getter
-        return "";
+        return lastSeen;
     }
 
-    void setStatus(string newStatus)
-    {
+
+    void setUsername(string uname) {username = uname;}
+
+    void setStatus(Status newStatus) {
         // TODO: Implement setter
+        status=newStatus;
     }
 
-    void setPhoneNumber(string phone)
-    {
+    void setPhoneNumber(string phone) {
         // TODO: Implement setter
+        phoneNumber=phone;
     }
 
-    void updateLastSeen()
-    {
+    void updateLastSeen() {
         // TODO: Implement last seen update
+        time_t currentTime=time(nullptr); //get the current time
+        lastSeen = ctime(&currentTime);
+        //cout<<"Last seen" << lastSeen;
     }
 
-    bool checkPassword(string pwd) const
-    {
+    bool checkPassword(string pwd) const {
         // TODO: Implement password check
+        if(pwd!=password)
         return false;
+    return true;
     }
 
-    void changePassword(string newPwd)
-    {
+    void changePassword(string newPwd) {
         // TODO: Implement password change
+        password=newPwd;
+    }
+
+    void goOnline()
+    {
+       updateLastSeen();
+       status = Online;
+    }
+
+     void goOffline()
+    {
+       updateLastSeen();
+       status = Offline;
     }
 };
-
 // ========================
 //      MESSAGE CLASS
 // ========================
