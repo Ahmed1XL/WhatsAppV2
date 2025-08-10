@@ -160,50 +160,101 @@ public:
 // ========================
 //       CHAT CLASS (BASE)
 // ========================
-class Chat
-{
+class Chat {
 protected:
     vector<string> participants;
     vector<Message> messages;
     string chatName;
 
 public:
-    Chat()
-    {
-        // TODO: Implement default constructor
+    Chat() {
+        chatName = "Unnamed Chat";
     }
 
-    Chat(vector<string> users, string name)
-    {
-        // TODO: Implement parameterized constructor
+    Chat(vector<string> users, string name) {
+        participants = users;
+        chatName = name;
     }
 
-    void addMessage(const Message &msg)
-    {
-        // TODO: Implement message addition
+    void addMessage(const Message& msg) {
+        messages.push_back(msg);
+    
     }
 
-    bool deleteMessage(int index, const string &username)
-    {
-        // TODO: Implement message deletion
+    bool deleteMessage(int index, const string& username) {
+        if (index >= 0 && index < messages.size()) {
+            if (messages[index].getSender() == username) {
+                messages.erase(messages.begin() + index);
+                return true;
+            }
+        }
         return false;
     }
 
-    virtual void displayChat() const
-    {
-        // TODO: Implement chat display
+    virtual void displayChat() const {
+        cout << "Chat Name: " << chatName << "\nParticipants: ";
+        for (const auto& user : participants) {
+            cout << user << " ";
+        }
+        cout << "\nMessages:\n";
+        for (const auto& msg : messages) {
+            msg.display();
+        }
     }
 
-    vector<Message> searchMessages(string keyword) const
-    {
-        // TODO: Implement message search
-        return {};
+    vector<Message> searchMessages(string keyword) const {
+        vector<Message> result;
+        for (const auto& msg : messages) {
+            if (msg.getContent().find(keyword) != string::npos) {
+                result.push_back(msg);
+            }
+        }
+        return result;
     }
 
-    void exportToFile(const string &filename) const
-    {
-        // TODO: Implement export to file
+    void exportToFile(const string& filename) const {
+        ofstream outFile(filename);
+        if (!outFile.is_open()) {
+            cout << "Error opening file.\n";
+            return;
+        }
+
+        
+        outFile << "Chat Type: " << (participants.size() == 2 ? "Private" : "Group") << "\n";
+        outFile << "Chat Name: " << chatName << "\n";
+
+       
+        outFile << "Participants: ";
+        if (participants.empty()) {
+            outFile << "None";
+        }
+        else {
+            for (const auto& user : participants) {
+                outFile << user << " ";
+            }
+        }
+        outFile << "\n";
+
+       
+        outFile << "Messages:\n";
+        if (messages.empty()) {
+            outFile << "No messages yet.\n";
+        }
+        else {
+            for (const auto& msg : messages) {
+                if (msg.getSender().empty() || msg.getContent().empty()) {
+                    outFile << "[Invalid message]\n";
+                    continue;
+                }
+                outFile << "[" << msg.getTimestamp() << "] " << msg.getSender()
+                    << ": " << msg.getContent() << " [" << msg.getStatus() << "]\n";
+            }
+        }
+
+        outFile.close();
+        cout << "Chat exported to " << filename << "\n";
     }
+
 };
 
 // ========================
