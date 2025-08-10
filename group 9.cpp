@@ -293,16 +293,30 @@ public:
     PrivateChat(string u1, string u2)
     {
         // TODO: Implement constructor
+        if(u1 == u2){
+            cout << "Both participants cannot\nhave the same name."<< endl;
+            return;
+        }
+
+        user1 = u1;
+        user2 = u2;
+        participants.push_back(user1);
+        participants.push_back(user2);
     }
 
     void displayChat() const override
     {
         // TODO: Implement private chat display
+        cout << "Chat History."<< endl;
+        for(Message msg : messages){
+            msg.display();
+        }
     }
 
     void showTypingIndicator(const string &username) const
     {
         // TODO: Implement typing indicator
+        cout << username << " Is Typing..." << endl;
     }
 };
 
