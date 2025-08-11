@@ -117,61 +117,85 @@ public:
     Message()
     {
         // TODO: Implement default constructor
+        sender = "";
+        content = "";
+        timestamp = "";
+        status = "";
+        replyTo = nullptr;
     }
 
     Message(string sndr, string cntnt)
     {
         // TODO: Implement parameterized constructor
+        sender = sndr;
+        content = cntnt;
+        time_t now = time(nullptr);
+        char* time_now = ctime(&now);
+        timestamp = string(time_now);
+        status = "Sent";
+        replyTo = nullptr;
     }
 
     string getContent() const
     {
         // TODO: Implement getter
-        return "";
+        return content;
     }
 
     string getSender() const
     {
         // TODO: Implement getter
-        return "";
+        return sender;
     }
 
     string getTimestamp() const
     {
         // TODO: Implement getter
-        return "";
+        return timestamp;
     }
 
     string getStatus() const
     {
         // TODO: Implement getter
-        return "";
+        return status;
     }
 
     Message *getReplyTo() const
     {
         // TODO: Implement getter
-        return nullptr;
+        return replyTo;
     }
 
     void setStatus(string newStatus)
     {
         // TODO: Implement setter
+        status = newStatus;
     }
 
     void setReplyTo(Message *msg)
     {
         // TODO: Implement setter
+        replyTo = msg;
     }
 
     void updateTimestamp()
     {
         // TODO: Implement timestamp update
+        time_t now = time(nullptr);
+        timestamp = ctime(&now);
     }
 
     void display() const
     {
         // TODO: Implement message display
+        cout << "Sender: " << getSender() << endl;
+        cout << "Content: " << getContent() << endl;
+        cout << "Timestamp: " << getTimestamp();
+        cout << "Status: " << getStatus() << endl;
+        if(getReplyTo())
+            cout << "Reply To: " << getReplyTo()->getSender() << endl;
+        else
+            cout << "Reply To: No reply" << endl;
     }
 
     void addEmoji(string emojiCode)
