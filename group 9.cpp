@@ -209,8 +209,9 @@ public:
         cout << "Content: " << getContent() << endl;
         cout << "Timestamp: " << getTimestamp();
         cout << "Status: " << getStatus() << endl;
-        if(getReplyTo()){
-            Message* s = getReplyTo();
+        if (getReplyTo())
+        {
+            Message *s = getReplyTo();
             Message m = *s;
             cout << "Reply To: " << m.getSender() << endl;
         }
@@ -775,7 +776,7 @@ public:
                 else if (chosenFeature == 2)
                 {
 
-                    cout << "Chatting with " << users[choice].getUsername() <<endl;
+                    cout << "Chatting with " << users[choice].getUsername() << endl;
                     while (true)
                     {
                         int exit;
@@ -850,11 +851,11 @@ public:
                         existingChat->deleteMessage(choose, temp[choose].getSender());
                         cout << "The Message sent by " << temp[choose].getSender() << "is deleted." << endl;
                         existingChat->displayChat();
-                        
-                    }else{
-                        cout << "out of range" <<endl;
                     }
-
+                    else
+                    {
+                        cout << "out of range" << endl;
+                    }
                 }
 
                 else if (chosenFeature == 4)
@@ -894,14 +895,14 @@ public:
                         cin.ignore(1000, '\n');
                         cout << "Invalid input! Please enter a number: ";
                     }
-                      // for the 0 index
+                    // for the 0 index
                     Message *found = &msg[replyTO]; // The original message
 
                     string reply;
                     cout << "The reply content: " << endl;
                     cin.ignore();
                     getline(cin, reply);
-                     
+
                     Message ReplyMsg(users[currentUserIndex].getUsername(), reply);
                     ReplyMsg.setReplyTo(found);
 
@@ -1197,7 +1198,6 @@ public:
                         cout << "Invalid input! Please enter a number: ";
                     }
 
-
                     string reply;
                     cout << "The reply content: " << endl;
 
@@ -1312,7 +1312,7 @@ public:
             if (!isLoggedIn())
             {
                 cout << "\n1. Login\n2. Sign Up\n3. Exit\nChoice: ";
-                int choice;         
+                int choice;
                 while (!(cin >> choice))
                 {
                     cin.clear();
