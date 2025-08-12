@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <ctime>
-#include <Windows.h>
 #include <fstream>
 #include <algorithm>
 using namespace std;
@@ -1356,7 +1355,7 @@ public:
 // ========================
 int main()
 {
-    SetConsoleOutputCP(CP_UTF8);
+    
     WhatsApp whatsapp;
     whatsapp.run();
     return 0;
