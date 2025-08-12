@@ -3,6 +3,7 @@
 #include <string>
 #include <ctime>
 #include <fstream>
+#include <algorithm>
 using namespace std;
 
 // ========================
@@ -145,7 +146,7 @@ public:
         sender = sndr;
         content = cntnt;
         time_t now = time(nullptr);
-        char* time_now = ctime(&now);
+        char *time_now = ctime(&now);
         timestamp = string(time_now);
         status = "Sent";
         replyTo = nullptr;
@@ -207,7 +208,7 @@ public:
         cout << "Content: " << getContent() << endl;
         cout << "Timestamp: " << getTimestamp();
         cout << "Status: " << getStatus() << endl;
-        if(getReplyTo())
+        if (getReplyTo())
             cout << "Reply To: " << getReplyTo()->getSender() << endl;
         else
             cout << "Reply To: No reply" << endl;
@@ -657,7 +658,7 @@ public:
                 int chosenFeature;
                 cout << 1 << ". View Messages" << endl;
                 cout << 2 << ". Send Message" << endl;
-                cout << 3 << ". Delete My Message" << endl;
+                cout << 3 << ". Delete a Message" << endl;
                 cout << 4 << ". Search Messages" << endl;
                 cout << 5 << ". replay To a Message" << endl;
                 cout << 6 << ". Exit Chat" << endl;
@@ -673,6 +674,12 @@ public:
                             m.setStatus("read");
                         }
                     }
+                    string partnerUsername = users[choice].getUsername();
+                    cout << partnerUsername << " is "
+                         << users[findUserIndex(partnerUsername)].getStatus() << endl;
+                    cout << "Last seen: "
+                         << users[findUserIndex(partnerUsername)].getLastSeen() << endl;
+
                     existingChat->displayChat();
                     viewed = true;
                 }
@@ -689,12 +696,15 @@ public:
                     cout << "Chatting with " << users[choice].getUsername();
                     while (true)
                     {
+                        int exit;
                         string content;
+                        cout << "enter 0 to leave:";
+                        cin >> exit;
+                        if (exit == 0)
+                            break;
                         cout << "Type message (exit to leave): ";
                         cin.ignore(); //<---
                         getline(cin, content);
-                        if (content == "exit")
-                            break;
 
                         Message msg(users[currentUserIndex].getUsername(), content);
                         existingChat->addMessage(msg);
@@ -714,15 +724,13 @@ public:
                     cout << "Choose on the message you want to delete: ";
                     cin >> choose;
 
-                    for (int i = 0; i < temp.size(); i++)
+                    if (choose > 0 && (!(choose > temp.size())))
                     {
-                        if (choose == i)
-                        {
-                            existingChat->deleteMessage(choose, temp[choose].getSender());
-                            cout << "The Message sent by " << temp[choose].getSender() << "is deleted." << endl;
-                            break;
-                        }
+                        existingChat->deleteMessage(choose, temp[choose].getSender());
+                        cout << "The Message sent by " << temp[choose].getSender() << "is deleted." << endl;
+                        break;
                     }
+
                     existingChat->displayChat();
                 }
 
@@ -759,7 +767,7 @@ public:
                     cin >> replyTO;
                     replyTO--;                      // for the 0 index
                     Message *found = &msg[replyTO]; // The original message
-                    
+
                     string reply;
                     cout << "The reply content: " << endl;
                     cin.ignore();
@@ -782,21 +790,292 @@ public:
     void createGroup()
     {
         // TODO: Implement group creation
+        do
+        {
+            int option;
+            cout << 1 << ". Append on a group chat." << endl;
+            cout << 2 << ". Create a new chat.\n" << endl;
+            cout << "select an option:";
+            cin >> option;
+
+            GroupChat *CurrentGroupChat;
+
+            if (option == 1)
+            {
+                for (int i = 0; i < chats.size(); i++)
+                {   
+                    GroupChat *gp;
+                    if (chats[i]->getparticipants().size() > 2)
+                    {
+                        gp = static_cast<GroupChat*>(chats[i]);
+
+                        auto participant = chats[i]->getparticipants();
+
+                        auto it = find(participant.begin(), participant.end(), users[currentUserIndex].getUsername());
+                        if (it != participant.end())
+                        {
+                            cout << i;
+                            gp->displayChat();
+                            
+                        }
+                    }
+                }
+                int choice;
+                cout << "Choose one of the chatting groups your in:";
+                cin >> choice;
+                CurrentGroupChat = static_cast<GroupChat *>(chats[choice]);
+            }
+            
+            if (option == 2)
+            {
+                for (int i = 0; i < users.size(); i++)
+                {
+                    cout << i + 1 << " -> " << users[i].getUsername() << endl;
+                }
+                vector<string> groupMemebers;
+                groupMemebers.push_back(users[currentUserIndex].getUsername());
+                while (true)
+                {
+                    int choose;
+                    cout << "choose the users you want them to be the memebers of you group:\n (enter 0 to stop choosing)" << endl;
+
+                    cin >> choose;
+                    if (0 == choose)
+                    {
+                        if (groupMemebers.size() > 2)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            cout << "you should have at least 3 numbers." << endl;
+                            continue;
+                        }
+                    }
+
+                    if (choose < 1 || choose > users.size())
+                    {
+                        cout << "this user doesn't exit." << endl;
+                        continue;
+                    }
+
+                    choose--;
+                    bool userIsFound = false;
+                    for (string s : groupMemebers)
+                    {
+                        if (s == users[choose].getUsername())
+                        {
+                            cout << "This user is already in the group" << endl;
+                            userIsFound = true;
+                            break;
+                        }
+                    }
+                    if (!(userIsFound))
+                    {
+                        groupMemebers.push_back(users[choose].getUsername());
+                    }
+                }
+
+                string ChatName;
+                cout << "Group name: ";
+                cin >> ChatName;
+
+                string desc;
+                cout << "Enter a description for your group: " << endl;
+                cin.ignore();
+                getline(cin, desc);
+
+                CurrentGroupChat = new GroupChat(groupMemebers, ChatName, users[currentUserIndex].getUsername());
+                CurrentGroupChat->setDescription(desc);
+                chats.push_back(CurrentGroupChat);
+            }
+
+            bool viewed = false;
+            while (true)
+            {
+                cout << "==== Chat Features Menu ====" << endl;
+                int chosenFeature;
+                cout << 1 << ". View Messages" << endl;
+                cout << 2 << ". Send Message" << endl;
+                cout << 3 << ". Delete a Message" << endl;
+                cout << 4 << ". Search Messages" << endl;
+                cout << 5 << ". replay To a Message" << endl;
+                cout << 6 << ". add admin" << endl;
+                cout << 7 << ". kick a participant" << endl;
+                cout << 8 << ". Exit Chat" << endl;
+                cin >> chosenFeature;
+
+                if (chosenFeature == 1)
+                {
+                    for (Message &m : CurrentGroupChat->getMessages())
+                    {
+                        if (m.getSender() != users[currentUserIndex].getUsername())
+                        {
+                            m.setStatus("read");
+                        }
+                    }
+                    CurrentGroupChat->displayChat();
+                    viewed = true;
+                }
+                else if (!(viewed))
+                {
+                    cout << "Please view the chat before any modification\n";
+                    continue;
+                }
+                else if (chosenFeature == 2)
+                {
+                    while (true)
+                    {
+                        int exit;
+                        string content;
+                        cout << "enter 0 to leave";
+                        cin >> exit;
+                        if (exit == 0)
+                            break;
+
+                        cout << "write the message you want to send: (Enter exit to leave)" << endl;
+                        cin.ignore();
+                        getline(cin, content);
+
+                        Message msg(users[currentUserIndex].getUsername(), content);
+                        CurrentGroupChat->addMessage(msg);
+                    }
+                }
+                else if (chosenFeature == 3)
+                {
+                    int choose;
+                    vector<Message> temp = CurrentGroupChat->getMessages();
+                    for (int i = 0; i < temp.size(); i++)
+                    {
+                        cout << i << " -> ";
+                        temp[i].display();
+                        cout << endl;
+                    }
+                    cout << "Choose on the message you want to delete: ";
+                    cin >> choose;
+
+                    
+                    CurrentGroupChat->deleteMessage(choose, temp[choose].getSender());
+                    cout << "The Message sent by " << temp[choose].getSender() << "is deleted." << endl;
+
+                    CurrentGroupChat->displayChat();
+                }
+                else if (chosenFeature == 4)
+                {
+                    string keyword;
+                    cout << "Enter a keyword to search for a messsage: ";
+                    cin >> keyword;
+                    vector<Message> result = CurrentGroupChat->searchMessages(keyword);
+
+                    if (!(result.empty()))
+                    {
+                        cout << "Here is the message you searched for." << endl;
+                        for (Message m : result)
+                        {
+                            m.display();
+                        }
+                    }
+                }
+                else if (chosenFeature == 5)
+                {
+                    vector<Message> &messages = CurrentGroupChat->getMessages();
+                    for (int i = 0; i < messages.size(); i++)
+                    {
+                        cout << i + 1 << " ";
+                        messages[i].display();
+                        cout << endl;
+                    }
+                    int choose;
+                    cout << "choose the message you want to reply to: ";
+                    cin >> choose;
+                    choose--;
+
+                    string reply;
+                    cout << "The reply content: " << endl;
+
+                    cin.ignore();
+                    getline(cin, reply);
+                    Message ReplyMsg(users[currentUserIndex].getUsername(), reply);
+
+                    ReplyMsg.setReplyTo(&messages[choose]);
+
+                    CurrentGroupChat->addMessage(ReplyMsg);
+                }
+                else if (chosenFeature == 6)
+                {
+                    vector<string> allParticipants = CurrentGroupChat->getparticipants();
+                    for (int i = 0; i < allParticipants.size(); i++)
+                    {
+                        cout << i << "->" << allParticipants[i] << endl;
+                    }
+                    int WhichParticipant;
+                    cout << "Which participant do you wnat to promote as an admin: ";
+                    cin >> WhichParticipant;
+
+                    // WhichParticipant;
+                    CurrentGroupChat->addAdmin(allParticipants[WhichParticipant]);
+                }
+                else if (chosenFeature == 7)
+                {
+                    vector<string> allParticipants = CurrentGroupChat->getparticipants();
+                    for (int i = 0; i < allParticipants.size(); i++)
+                    {
+                        cout << i << "->" << allParticipants[i] << endl;
+                    }
+                    int remove;
+                    cout << "Which participant do you wnat to promote as an admin: ";
+                    cin >> remove;
+
+                    CurrentGroupChat->removeParticipant(users[currentUserIndex].getUsername(), allParticipants[remove]);
+                }
+                else if (chosenFeature == 8)
+                {
+                    char YesOrNo;
+                    cout << "Do you want to start another group: (y/n)";
+                    cin >> YesOrNo;
+                    if (YesOrNo == 'n' || YesOrNo == 'N')
+                    {
+                        return;
+                    }
+                    break;
+                }
+            }
+
+        } while (true);
     }
 
     void viewChats() const
     {
         // TODO: Implement chat viewing
-        for (Chat *ch : chats)
+        string privateOrGroup;
+        cout << "Do you want The priavte chats or the group chats: ";
+        cin >> privateOrGroup;
+        if (privateOrGroup == "private")
         {
-            ch->displayChat();
+            for (Chat *c : chats)
+            {
+                if (c->getparticipants().size() == 2)
+                {
+                    c->displayChat();
+                }
+            }
+        }
+        else
+        {
+            for (Chat *c : chats)
+            {
+                if (c->getparticipants().size() > 2)
+                {
+                    c->displayChat();
+                }
+            }
         }
     }
 
     void logout()
     {
         // TODO: Implement logout
-        if (isLoggedIn())
+        if (!(isLoggedIn()))
         {
             cout << "Your not logged in." << endl;
             return;
