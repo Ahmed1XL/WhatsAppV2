@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <ctime>
+#include <Windows.h>
 #include <fstream>
 using namespace std;
 
@@ -216,6 +217,59 @@ public:
     void addEmoji(string emojiCode)
     {
         // TODO: Implement emoji support
+        string s;
+        if(emojiCode == "1"){
+            s = u8"\U0001F603"; //Smiling face
+        }
+        
+        else if(emojiCode == "2"){
+            s = u8"\U0001F609"; //Winking face
+        }
+        
+        else if(emojiCode == "3") {
+            s = u8"\U0001F602"; //Laughing with tears
+        }   
+        
+        else if(emojiCode == "4"){
+            s = u8"\U0001F621"; //Angry face
+        }    
+        
+        else if(emojiCode == "5"){
+            s = u8"\U0001F622"; //Tearing "sad" face
+        } 
+        
+        else if(emojiCode == "6"){
+            s = u8"\U0001F62D"; //Crying face
+        } 
+        
+        else if(emojiCode == "7"){
+            s = u8"\U0001F632"; //Astonished face
+        }    
+        
+        else if(emojiCode == "8"){
+            s = u8"\U00002764"; //Black Heart
+        }    
+        
+        else if(emojiCode == "9"){
+            s = u8"\U0001F497"; //Growing Red heart
+        }    
+        
+        else if(emojiCode == "10"){
+            s = u8"\U0001F494"; //Broken Red Heart
+        }    
+        
+        else if(emojiCode == "11"){
+            s = u8"\U0001F44D"; //Thumbs up
+        }     
+        
+        else if(emojiCode == "12"){
+            s = u8"\U0001F44E"; //Thumbs down
+        }    
+        
+        else
+            s = "Invalid!";
+
+        cout << s << endl;
     }
 };
 
@@ -848,6 +902,7 @@ public:
 // ========================
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
     WhatsApp whatsapp;
     whatsapp.run();
     return 0;
