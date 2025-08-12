@@ -32,7 +32,7 @@ public:
         password = "";
         phoneNumber = "";
         status = Offline;
-        lastSeen = "";
+        lastSeen = "never";
     }
 
     User(string uname, string pwd, string phone)
@@ -209,8 +209,11 @@ public:
         cout << "Content: " << getContent() << endl;
         cout << "Timestamp: " << getTimestamp();
         cout << "Status: " << getStatus() << endl;
-        if (getReplyTo())
-            cout << "Reply To: " << getReplyTo()->getSender() << endl;
+        if(getReplyTo()){
+            Message* s = getReplyTo();
+            Message m = *s;
+            cout << "Reply To: " << m.getSender() << endl;
+        }
         else
             cout << "Reply To: No reply" << endl;
     }
@@ -219,58 +222,70 @@ public:
     {
         // TODO: Implement emoji support
         string s;
-        if(emojiCode == "1"){
-            s = u8"\U0001F603"; //Smiling face
+        if (emojiCode == "1")
+        {
+            s = u8"\U0001F603"; // Smiling face
         }
-        
-        else if(emojiCode == "2"){
-            s = u8"\U0001F609"; //Winking face
-        }
-        
-        else if(emojiCode == "3") {
-            s = u8"\U0001F602"; //Laughing with tears
-        }   
-        
-        else if(emojiCode == "4"){
-            s = u8"\U0001F621"; //Angry face
-        }    
-        
-        else if(emojiCode == "5"){
-            s = u8"\U0001F622"; //Tearing "sad" face
-        } 
-        
-        else if(emojiCode == "6"){
-            s = u8"\U0001F62D"; //Crying face
-        } 
-        
-        else if(emojiCode == "7"){
-            s = u8"\U0001F632"; //Astonished face
-        }    
-        
-        else if(emojiCode == "8"){
-            s = u8"\U00002764"; //Black Heart
-        }    
-        
-        else if(emojiCode == "9"){
-            s = u8"\U0001F497"; //Growing Red heart
-        }    
-        
-        else if(emojiCode == "10"){
-            s = u8"\U0001F494"; //Broken Red Heart
-        }    
-        
-        else if(emojiCode == "11"){
-            s = u8"\U0001F44D"; //Thumbs up
-        }     
-        
-        else if(emojiCode == "12"){
-            s = u8"\U0001F44E"; //Thumbs down
-        }    
-        
-        else
-            s = "Invalid!";
 
-        cout << s << endl;
+        else if (emojiCode == "2")
+        {
+            s = u8"\U0001F609"; // Winking face
+        }
+
+        else if (emojiCode == "3")
+        {
+            s = u8"\U0001F602"; // Laughing with tears
+        }
+
+        else if (emojiCode == "4")
+        {
+            s = u8"\U0001F621"; // Angry face
+        }
+
+        else if (emojiCode == "5")
+        {
+            s = u8"\U0001F622"; // Tearing "sad" face
+        }
+
+        else if (emojiCode == "6")
+        {
+            s = u8"\U0001F62D"; // Crying face
+        }
+
+        else if (emojiCode == "7")
+        {
+            s = u8"\U0001F632"; // Astonished face
+        }
+
+        else if (emojiCode == "8")
+        {
+            s = u8"\U00002764"; // Black Heart
+        }
+
+        else if (emojiCode == "9")
+        {
+            s = u8"\U0001F497"; // Growing Red heart
+        }
+
+        else if (emojiCode == "10")
+        {
+            s = u8"\U0001F494"; // Broken Red Heart
+        }
+
+        else if (emojiCode == "11")
+        {
+            s = u8"\U0001F44D"; // Thumbs up
+        }
+
+        else if (emojiCode == "12")
+        {
+            s = u8"\U0001F44E"; // Thumbs down
+        }
+
+        else
+            return;
+
+        content += s;
     }
 };
 
@@ -675,7 +690,14 @@ public:
             {
                 cout << i + 1 << " -> " << users[i].getUsername() << endl;
             }
-            cin >> choice;
+
+            while (!(cin >> choice))
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "Invalid input! Please enter a number: ";
+            }
+
             if (choice == 0)
                 break;
             choice--; // adjust to 0-based index
@@ -714,9 +736,15 @@ public:
                 cout << 2 << ". Send Message" << endl;
                 cout << 3 << ". Delete a Message" << endl;
                 cout << 4 << ". Search Messages" << endl;
-                cout << 5 << ". replay To a Message" << endl;
+                cout << 5 << ". reply To a Message" << endl;
                 cout << 6 << ". Exit Chat" << endl;
-                cin >> chosenFeature;
+
+                while (!(cin >> chosenFeature))
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid input! Please enter a number: ";
+                }
 
                 if (chosenFeature == 1)
                 {
@@ -747,20 +775,53 @@ public:
                 else if (chosenFeature == 2)
                 {
 
-                    cout << "Chatting with " << users[choice].getUsername();
+                    cout << "Chatting with " << users[choice].getUsername() <<endl;
                     while (true)
                     {
                         int exit;
                         string content;
-                        cout << "enter 0 to leave:";
-                        cin >> exit;
+                        cout << "Enter 0 to leave:";
+
+                        while (!(cin >> exit))
+                        {
+                            cin.clear();
+                            cin.ignore(1000, '\n');
+                            cout << "Invalid input! Please enter a number: ";
+                        }
                         if (exit == 0)
                             break;
                         cout << "Type message (exit to leave): ";
                         cin.ignore(); //<---
                         getline(cin, content);
-
                         Message msg(users[currentUserIndex].getUsername(), content);
+                        string isAgreed;
+                        cout << "Do you want to add emoji." << endl;
+                        cin >> isAgreed;
+
+                        while (isAgreed == "y" || isAgreed == "Y")
+                        {
+                            cout << 1 << " smiling face." << endl;
+                            cout << 2 << " winking face." << endl;
+                            cout << 3 << " laughing with tears." << endl;
+                            cout << 4 << " angry face." << endl;
+                            cout << 5 << " sad face." << endl;
+                            cout << 6 << " crying face." << endl;
+                            cout << 7 << " astonished face." << endl;
+                            cout << 8 << " black heart." << endl;
+                            cout << 9 << " growing red heart." << endl;
+                            cout << 10 << " broken red heart." << endl;
+                            cout << 11 << " thumbs up." << endl;
+                            cout << 12 << " thumbs down." << endl;
+                            cout << "any thing exept these 12 options will not add any thing" << endl;
+                            string emjiCode;
+                            cout << "you input: " << endl;
+                            cin >> emjiCode;
+                            msg.addEmoji(emjiCode);
+
+                            cout << "Do you to add more emojs(y/n)." << endl;
+                            cin >> isAgreed;
+                        }
+
                         existingChat->addMessage(msg);
                     }
                 }
@@ -776,16 +837,24 @@ public:
                         cout << endl;
                     }
                     cout << "Choose on the message you want to delete: ";
-                    cin >> choose;
 
-                    if (choose > 0 && (!(choose > temp.size())))
+                    while (!(cin >> choose))
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input! Please enter a number: ";
+                    }
+
+                    if ((!choose > 0) && (!(choose > temp.size())))
                     {
                         existingChat->deleteMessage(choose, temp[choose].getSender());
                         cout << "The Message sent by " << temp[choose].getSender() << "is deleted." << endl;
-                        break;
+                        existingChat->displayChat();
+                        
+                    }else{
+                        cout << "out of range" <<endl;
                     }
 
-                    existingChat->displayChat();
                 }
 
                 else if (chosenFeature == 4)
@@ -813,20 +882,26 @@ public:
                     vector<Message> &msg = existingChat->getMessages();
                     for (int i = 0; i < msg.size(); i++)
                     {
-                        cout << i + 1 << " -> ";
+                        cout << i << " -> ";
                         msg[i].display();
                     }
                     int replyTO;
                     cout << "Choose the message you want to reply to: ";
-                    cin >> replyTO;
-                    replyTO--;                      // for the 0 index
+
+                    while (!(cin >> replyTO))
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input! Please enter a number: ";
+                    }
+                      // for the 0 index
                     Message *found = &msg[replyTO]; // The original message
 
                     string reply;
                     cout << "The reply content: " << endl;
                     cin.ignore();
                     getline(cin, reply);
-
+                     
                     Message ReplyMsg(users[currentUserIndex].getUsername(), reply);
                     ReplyMsg.setReplyTo(found);
 
@@ -848,20 +923,26 @@ public:
         {
             int option;
             cout << 1 << ". Append on a group chat." << endl;
-            cout << 2 << ". Create a new chat.\n" << endl;
+            cout << 2 << ". Create a new chat.\n"
+                 << endl;
             cout << "select an option:";
-            cin >> option;
 
+            while (!(cin >> option))
+            {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "Invalid input! Please enter a number: ";
+            }
             GroupChat *CurrentGroupChat;
 
             if (option == 1)
             {
                 for (int i = 0; i < chats.size(); i++)
-                {   
+                {
                     GroupChat *gp;
                     if (chats[i]->getparticipants().size() > 2)
                     {
-                        gp = static_cast<GroupChat*>(chats[i]);
+                        gp = static_cast<GroupChat *>(chats[i]);
 
                         auto participant = chats[i]->getparticipants();
 
@@ -870,16 +951,28 @@ public:
                         {
                             cout << i;
                             gp->displayChat();
-                            
                         }
                     }
                 }
                 int choice;
                 cout << "Choose one of the chatting groups your in:";
-                cin >> choice;
-                CurrentGroupChat = static_cast<GroupChat *>(chats[choice]);
+
+                while (!(cin >> choice))
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid input! Please enter a number: ";
+                }
+                if (!(choice < 0) || !(choice > chats.size()))
+                {
+                    CurrentGroupChat = static_cast<GroupChat *>(chats[choice]);
+                }
+                else
+                {
+                    cout << "out of range." << endl;
+                }
             }
-            
+
             if (option == 2)
             {
                 for (int i = 0; i < users.size(); i++)
@@ -893,7 +986,13 @@ public:
                     int choose;
                     cout << "choose the users you want them to be the memebers of you group:\n (enter 0 to stop choosing)" << endl;
 
-                    cin >> choose;
+                    while (!(cin >> choose))
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input! Please enter a number: ";
+                    }
+
                     if (0 == choose)
                     {
                         if (groupMemebers.size() > 2)
@@ -957,7 +1056,13 @@ public:
                 cout << 6 << ". add admin" << endl;
                 cout << 7 << ". kick a participant" << endl;
                 cout << 8 << ". Exit Chat" << endl;
-                cin >> chosenFeature;
+
+                while (!(cin >> chosenFeature))
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid input! Please enter a number: ";
+                }
 
                 if (chosenFeature == 1)
                 {
@@ -982,16 +1087,49 @@ public:
                     {
                         int exit;
                         string content;
-                        cout << "enter 0 to leave";
-                        cin >> exit;
+                        cout << "Enter 0 to leave: ";
+
+                        while (!(cin >> exit))
+                        {
+                            cin.clear();
+                            cin.ignore(1000, '\n');
+                            cout << "Invalid input! Please enter a number: ";
+                        }
                         if (exit == 0)
                             break;
 
                         cout << "write the message you want to send: (Enter exit to leave)" << endl;
                         cin.ignore();
                         getline(cin, content);
-
                         Message msg(users[currentUserIndex].getUsername(), content);
+                        string isAgreed;
+                        cout << "Do you want to add emoji(y/n)." << endl;
+                        cin >> isAgreed;
+
+                        while (isAgreed == "y" || isAgreed == "Y")
+                        {
+                            cout << 1 << " smiling face." << endl;
+                            cout << 2 << " winking face." << endl;
+                            cout << 3 << " laughing with tears." << endl;
+                            cout << 4 << " angry face." << endl;
+                            cout << 5 << " sad face." << endl;
+                            cout << 6 << " crying face." << endl;
+                            cout << 7 << " astonished face." << endl;
+                            cout << 8 << " black heart." << endl;
+                            cout << 9 << " growing red heart." << endl;
+                            cout << 10 << " broken red heart." << endl;
+                            cout << 11 << " thumbs up." << endl;
+                            cout << 12 << " thumbs down." << endl;
+                            cout << "any thing exept these 12 options will not add any thing" << endl;
+                            string emjiCode;
+                            cout << "you input: " << endl;
+                            cin >> emjiCode;
+                            msg.addEmoji(emjiCode);
+
+                            cout << "Do you to add more emojs(y/n)." << endl;
+                            cin >> isAgreed;
+                        }
+
                         CurrentGroupChat->addMessage(msg);
                     }
                 }
@@ -1006,13 +1144,23 @@ public:
                         cout << endl;
                     }
                     cout << "Choose on the message you want to delete: ";
-                    cin >> choose;
 
-                    
-                    CurrentGroupChat->deleteMessage(choose, temp[choose].getSender());
-                    cout << "The Message sent by " << temp[choose].getSender() << "is deleted." << endl;
-
-                    CurrentGroupChat->displayChat();
+                    while (!(cin >> choose))
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input! Please enter a number: ";
+                    }
+                    if (!(choose < 0) || !(choose > temp.size()))
+                    {
+                        CurrentGroupChat->deleteMessage(choose, temp[choose].getSender());
+                        cout << "The Message sent by " << temp[choose].getSender() << "is deleted." << endl;
+                        CurrentGroupChat->displayChat();
+                    }
+                    else
+                    {
+                        cout << "Out of range" << endl;
+                    }
                 }
                 else if (chosenFeature == 4)
                 {
@@ -1041,8 +1189,14 @@ public:
                     }
                     int choose;
                     cout << "choose the message you want to reply to: ";
-                    cin >> choose;
-                    choose--;
+
+                    while (!(cin >> choose))
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input! Please enter a number: ";
+                    }
+
 
                     string reply;
                     cout << "The reply content: " << endl;
@@ -1064,9 +1218,14 @@ public:
                     }
                     int WhichParticipant;
                     cout << "Which participant do you wnat to promote as an admin: ";
-                    cin >> WhichParticipant;
 
-                    // WhichParticipant;
+                    while (!(cin >> WhichParticipant))
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input! Please enter a number: ";
+                    }
+
                     CurrentGroupChat->addAdmin(allParticipants[WhichParticipant]);
                 }
                 else if (chosenFeature == 7)
@@ -1078,14 +1237,20 @@ public:
                     }
                     int remove;
                     cout << "Which participant do you wnat to promote as an admin: ";
-                    cin >> remove;
+
+                    while (!(cin >> remove))
+                    {
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        cout << "Invalid input! Please enter a number: ";
+                    }
 
                     CurrentGroupChat->removeParticipant(users[currentUserIndex].getUsername(), allParticipants[remove]);
                 }
                 else if (chosenFeature == 8)
                 {
                     char YesOrNo;
-                    cout << "Do you want to start another group: (y/n)";
+                    cout << "Do you want to back to options menu: (y/n)";
                     cin >> YesOrNo;
                     if (YesOrNo == 'n' || YesOrNo == 'N')
                     {
@@ -1147,8 +1312,13 @@ public:
             if (!isLoggedIn())
             {
                 cout << "\n1. Login\n2. Sign Up\n3. Exit\nChoice: ";
-                int choice;
-                cin >> choice;
+                int choice;         
+                while (!(cin >> choice))
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid input! Please enter a number: ";
+                }
 
                 if (choice == 1)
                     login();
@@ -1161,7 +1331,12 @@ public:
             {
                 cout << "\n1. Start Private Chat\n2. Create Group\n3. View Chats\n4. Logout\nChoice: ";
                 int choice;
-                cin >> choice;
+                while (!(cin >> choice))
+                {
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "Invalid input! Please enter a number: ";
+                }
 
                 if (choice == 1)
                     startPrivateChat();
